@@ -1,0 +1,237 @@
+create database mydb;
+
+create table user(
+    user_id int auto_increment,
+    name varchar(30) not null,
+    email varchar(20) not null,
+    password varchar(100) not null,
+    isVerified boolean default 0,
+    primary key(user_id),
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=INNODB;
+
+
+insert into user(name, email, password) values('Teser Testov', 'test@gmail.com', '12345');
+insert into user(name, email, password, role) values('George Smith', 'admin@gmail.com', '12345');
+
+select * from user; // see these result comes up
++----+--------------+-----------------+----------+-------+---------------------+---------------------+
+| id | name         | email           | password | role  | created_at          | modified_at         |
++----+--------------+-----------------+----------+-------+---------------------+---------------------+
+|  1 | Teser Testov | test@gmail.com  | 12345    | user  | 2022-01-02 13:25:37 | 2022-01-02 13:28:09 |
+|  2 | George Smith | admin@gmail.com | 12345    | admin | 2022-01-02 13:28:35 | 2022-01-02 13:31:33 |
++----+--------------+-----------------+----------+-------+---------------------+---------------------+
+2 rows in set (0.00 sec)
+
+create table user_role(
+    role_id int auto_increment,
+    primary key(role_id),
+    role varchar(30) not null,
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=INNODB;
++-------------+-----------+------+-----+-------------------+-----------------------------------------------+
+| Field       | Type      | Null | Key | Default           | Extra                                         |
++-------------+-----------+------+-----+-------------------+-----------------------------------------------+
+| role_id     | int       | NO   | PRI | NULL              | auto_increment                                |
+| created_at  | timestamp | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| modified_at | timestamp | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
++-------------+-----------+------+-----+-------------------+-----------------------------------------------+
+3 rows in set (0.02 sec)
+
+create table user_permission(
+    user_id int not null,
+    role_id int not null,
+    INDEX (user_id),
+    foreign key (user_id) references user(id) ON DELETE CASCADE,
+    INDEX (role_id),
+    foreign key (role_id) references user_role(role_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=INNODB;
+
++-------------+-----------+------+-----+-------------------+-----------------------------------------------+
+| Field       | Type      | Null | Key | Default           | Extra                                         |
++-------------+-----------+------+-----+-------------------+-----------------------------------------------+
+| user_id     | int       | NO   | MUL | NULL              |                                               |
+| role_id     | int       | NO   | MUL | NULL              |                                               |
+| created_at  | timestamp | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| modified_at | timestamp | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
++-------------+-----------+------+-----+-------------------+-----------------------------------------------+
+4 rows in set (0.02 sec)
+
+
+create table book_author (
+    id int auto_increment,
+    author_name varchar(40) not null,
+    primary key (id),
+    created_at timestamp DEFAULT now()
+)ENGINE=INNODB;
++-------------+-------------+------+-----+-------------------+-------------------+
+| Field       | Type        | Null | Key | Default           | Extra             |
++-------------+-------------+------+-----+-------------------+-------------------+
+| id          | int         | NO   | PRI | NULL              | auto_increment    |
+| author_name | varchar(40) | NO   |     | NULL              |                   |
+| created_at  | timestamp   | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
++-------------+-------------+------+-----+-------------------+-------------------+
+3 rows in set (0.02 sec)
+
+
+create table book(
+    book_id int auto_increment,
+    title varchar(20) not null,
+    num_pages int not null,
+    publication_date timestamp DEFAULT now(),
+    rate double not null default 0,
+    featured boolean default 0,
+    price varchar(20),
+    book_author varchar(30) not null,
+    primary key (book_id),
+    category_id int,
+    INDEX (category_id),
+    foreign key (category_id) references categories(category_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    book_language varchar(20) not null,
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=INNODB;
+
+create table categories (
+    category_id int auto_increment,
+    category_name varchar (40) not null,
+    primary key(category_id),
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=INNODB;
+
+create table images (
+    image_id int auto_increment primary key,
+    fieldname varchar(40) null,
+    originalname varchar(50) not null,
+    encoding varchar(10),
+    mimetype varchar(30) not null,
+    destination varchar(50),
+    filename varchar(50) not null,
+    path varchar(100) not null,
+    size int,
+    book_id int not null,
+    INDEX(book_id),
+    foreign key (book_id) references book(book_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=INNODB;
+
+create table if not exists orders (
+    order_id int auto_increment primary key,
+    dest_address_id int not null,
+    INDEX(dest_address_id),
+    foreign key (dest_address_id) references address(address_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    user_id int null,
+    INDEX (user_id),
+    foreign key (user_id) references user(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+     created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=InnoDB;
+
+create table if not exists address(
+    address_id int auto_increment primary key,
+    street_number int not null,
+    street_name varchar(30) not null,
+    city varchar(30) not null,
+    post_code int not null,
+    country_name varchar(30) not null,
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=InnoDB;
+mysql> desc address;
++---------------+-------------+------+-----+-------------------+-----------------------------------------------+
+| Field         | Type        | Null | Key | Default           | Extra                                         |
++---------------+-------------+------+-----+-------------------+-----------------------------------------------+
+| address_id    | int         | NO   | PRI | NULL              | auto_increment                                |
+| street_number | int         | NO   |     | NULL              |                                               |
+| street_name   | varchar(30) | NO   |     | NULL              |                                               |
+| city          | varchar(30) | NO   |     | NULL              |                                               |
+| post_code     | int         | NO   |     | NULL              |                                               |
+| country_name  | varchar(30) | NO   |     | NULL              |                                               |
+| created_at    | timestamp   | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| modified_at   | timestamp   | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
++---------------+-------------+------+-----+-------------------+-----------------------------------------------+
+8 rows in set (0.04 sec)
+
+
+create table if not exists order_detail(
+    order_detail_id int auto_increment primary key,
+    status_date date,
+    quantity int default 0,
+    book_id int not null,
+    INDEX (book_id),
+    foreign key(book_id) references book(book_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    total_price int,
+    sub_total_price int,
+    order_status varchar(20),
+    payment_id int not null,
+    INDEX(payment_id),
+    foreign key (payment_id) references payments(payment_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=InnoDB;
+
+mysql> desc order_detail;
++-----------------+-------------+------+-----+-------------------+-----------------------------------------------+
+| Field           | Type        | Null | Key | Default           | Extra                                         |
++-----------------+-------------+------+-----+-------------------+-----------------------------------------------+
+| order_detail_id | int         | NO   | PRI | NULL              | auto_increment                                |
+| status_date     | date        | YES  |     | NULL              |                                               |
+| quantity        | int         | YES  |     | 0                 |                                               |
+| book_id         | int         | NO   | MUL | NULL              |                                               |
+| total_price     | int         | YES  |     | NULL              |                                               |
+| order_status    | varchar(20) | YES  |     | NULL              |                                               |
+| payment_id      | int         | NO   | MUL | NULL              |                                               |
+| created_at      | timestamp   | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| modified_at     | timestamp   | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
++-----------------+-------------+------+-----+-------------------+-----------------------------------------------+
+9 rows in set (0.02 sec)
+
+create table if not exists payments(
+    payment_id int auto_increment primary key,
+    card_type varchar(20) not null,
+    card_number varchar(16) not null,
+    card_date date not null,
+    expiry_date date not null,
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=InnoDB;
+
+mysql> desc payments;
++-------------+-------------+------+-----+-------------------+-----------------------------------------------+
+| Field       | Type        | Null | Key | Default           | Extra                                         |
++-------------+-------------+------+-----+-------------------+-----------------------------------------------+
+| payment_id  | int         | NO   | PRI | NULL              | auto_increment                                |
+| card_type   | varchar(20) | NO   |     | NULL              |                                               |
+| card_number | varchar(16) | NO   |     | NULL              |                                               |
+| card_date   | date        | NO   |     | NULL              |                                               |
+| expiry_date | date        | NO   |     | NULL              |                                               |
+| created_at  | timestamp   | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| modified_at | timestamp   | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
++-------------+-------------+------+-----+-------------------+-----------------------------------------------+
+7 rows in set (0.02 sec)
+
+create table if not exists store_cart(
+    store_cart_id int auto_increment primary key,
+    user_id int not null,
+    INDEX(user_id),
+    foreign key(user_id) references user(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=InnoDB;
+
+create table if not exists cart_item(
+    cart_item_id int auto_increment primary key,
+    quantity int not null,
+    book_id int not null,
+    INDEX(book_id),
+    foreign key(book_id) references book(book_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    created_at timestamp DEFAULT now(),
+    modified_at timestamp DEFAULT now() on update now()
+)ENGINE=InnoDB;
+
