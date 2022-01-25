@@ -128,7 +128,7 @@ const bookController = {
 
     getBooksByCategory: asyncWrapper(async (req, res, next) => {
         const  category_name  = req.query.category_name;
-       
+         console.log('hello world')
         if (!category_name) {
             return next(createCustomError(`input filed is missing`, 400))
         }
@@ -144,7 +144,7 @@ const bookController = {
     }),
 
     getAllCategory: asyncWrapper(async (req, res, next) => {
-    
+            return res.json({msg: `all categoryies here `})
     })
 }
 

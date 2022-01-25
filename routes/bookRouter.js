@@ -15,7 +15,9 @@ router.route('/book/:id')
     .get(bookController.getBookDeatil)
     .patch(bookController.updateBook)
     .delete(bookController.deleteBook)
-  
+    // get book by cateogry name /api/category?name=science_book
+router.route('/book/search')
+    .get(bookController.searchBook)  
 router.route('/category')
     .post(bookController.createCategory)    
 
@@ -24,13 +26,9 @@ router.route('/category/:id')
     .get(bookController.getBooksByCategory)
     .patch(bookController.updateCategory)
     .delete(bookController.deleteCategory)
-
-    // get book by cateogry name /api/category?name=science_book
-router.route('/category')
-    .get(bookController.getBooksByCategory)
     
 // view all category of books
-router.route('/category/all')
+router.route('/categories')
     .get(bookController.getAllCategory)
 
 

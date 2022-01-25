@@ -152,7 +152,7 @@ const authController = {
         console.log(refreshToken)
         if (req.session.token != refreshToken) 
             return next(createCustomError('No token with provided refreshToken', 403))
-
+        
         const token = generateAccessToken(req.session.user)
         return res.status(200).json({ token: token})
 

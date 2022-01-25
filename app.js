@@ -6,6 +6,7 @@ import session from "express-session"
 
 import authRouter from "./routes/authRouter.js"
 import bookRouter from "./routes/bookRouter.js"
+import orderRouter from "./routes/orderRouter.js"
 import notFoundRoute from "./middleware/not-found.js"
 import errorHandlerMiddleware from "./middleware/error-handler.js"
 import cors from "cors"
@@ -65,6 +66,7 @@ app.use(function (req, res, next) {
 
 app.use('/api', authRouter)
 app.use('/api', bookRouter)
+app.use('/api', orderRouter)
 
 app.use(notFoundRoute)
 app.use(errorHandlerMiddleware)
